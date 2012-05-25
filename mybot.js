@@ -1,20 +1,55 @@
+
+var board
+var items = []
+var targetedItems = []
+var targetedIndex = 0
+
 function new_game() {
+
+   board = get_board()
+
+   items = []
+   targetedItems = []
+   targetedIndex = 0
+
+   for (var i = 0; i < WIDTH; i++) {
+     for (var j = 0; j < HEIGHT; j++) {
+         if (has_item(board[i][j])) {
+            !items && (items = [])
+            !items[board[i][j]] && (items[board[i][j]] = [])
+            items[board[i][j]].push(new node(i, j, null))
+         }
+      }
+   }
+
+   targetedItems = items[items.length-1]
 }
 
 function make_move() {
-   var board = get_board();
-
    // we found an item! take it!
-   if (board[get_my_x()][get_my_y()] > 0) {
-       return TAKE;
+   var item = targetedItems[targetedIndex]
+   if(get_my_x() == item.x && get_my_y() == item.y) {
+      targetedItems.length > targetedIndex && targetedIndex++
+      if (board[get_my_x()][get_my_y()] > 0) {
+         return TAKE
+      }
    }
 
-   var rand = Math.random() * 4;
-
-   if (rand < 1) return NORTH;
-   if (rand < 2) return SOUTH;
-   if (rand < 3) return EAST;
-   if (rand < 4) return WEST;
+   if (get_my_x() < targetedItems[targetedIndex].x) {
+      return EAST
+   } else if (get_my_x() > targetedItems[targetedIndex].x) {
+      return WEST
+   } else if (get_my_y() > targetedItems[targetedIndex].y) {
+      return NORTH
+   } else if (get_my_y() < targetedItems[targetedIndex].y) {
+      return SOUTH
+   } 
 
    return PASS;
+}
+
+function node(x, y, move) {
+    this.x = x;
+    this.y = y;
+    this.move = move;
 }
